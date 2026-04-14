@@ -17,9 +17,9 @@ from pathlib import Path
 
 from tree_sitter import Node
 
-from vibelint.models import Finding, RuleMeta, Severity
-from vibelint.rules.base import Rule
-from vibelint.rules.registry import register
+from astray.models import Finding, RuleMeta, Severity
+from astray.rules.base import Rule
+from astray.rules.registry import register
 
 _ARRAY_METHODS = frozenset({b"map", b"filter", b"forEach", b"flatMap", b"find", b"some", b"every"})
 

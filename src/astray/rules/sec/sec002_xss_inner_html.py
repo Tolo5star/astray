@@ -19,9 +19,9 @@ from pathlib import Path
 
 from tree_sitter import Node
 
-from vibelint.models import Finding, RuleMeta, Severity
-from vibelint.rules.base import Rule
-from vibelint.rules.registry import register
+from astray.models import Finding, RuleMeta, Severity
+from astray.rules.base import Rule
+from astray.rules.registry import register
 
 _INNER_HTML_RE = re.compile(rb"""\.innerHTML\s*=""")
 

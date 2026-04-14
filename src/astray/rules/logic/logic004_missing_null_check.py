@@ -18,9 +18,9 @@ from pathlib import Path
 
 from tree_sitter import Node
 
-from vibelint.models import Finding, RuleMeta, Severity
-from vibelint.rules.base import Rule
-from vibelint.rules.registry import register
+from astray.models import Finding, RuleMeta, Severity
+from astray.rules.base import Rule
+from astray.rules.registry import register
 
 # Methods that return T | undefined (the value might not exist)
 _NULLABLE_METHODS = frozenset({b"find", b"at", b"get", b"shift", b"pop"})

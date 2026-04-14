@@ -5,10 +5,10 @@ from __future__ import annotations
 import fnmatch
 from pathlib import Path
 
-from vibelint.config import VibelintConfig, load_config
-from vibelint.models import Finding, ScanResult
-from vibelint.parsers.typescript import SUPPORTED_EXTENSIONS, TypeScriptParser
-from vibelint.rules.registry import get_all_rules
+from astray.config import VibelintConfig, load_config
+from astray.models import Finding, ScanResult
+from astray.parsers.typescript import SUPPORTED_EXTENSIONS, TypeScriptParser
+from astray.rules.registry import get_all_rules
 
 
 class Scanner:

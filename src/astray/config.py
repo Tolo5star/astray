@@ -1,4 +1,4 @@
-"""Configuration loading from .vibelint.yaml."""
+"""Configuration loading from .astray.yaml."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from typing import Any
 import yaml
 from pydantic import BaseModel, Field
 
-from vibelint.models import Severity
+from astray.models import Severity
 
 
 class RuleConfig(BaseModel):
@@ -33,13 +33,13 @@ class VibelintConfig(BaseModel):
 
 
 def load_config(start_dir: Path | None = None) -> VibelintConfig:
-    """Walk up from start_dir looking for .vibelint.yaml. Return defaults if not found."""
+    """Walk up from start_dir looking for .astray.yaml. Return defaults if not found."""
     if start_dir is None:
         start_dir = Path.cwd()
 
     search = start_dir.resolve()
     for directory in [search, *search.parents]:
-        config_path = directory / ".vibelint.yaml"
+        config_path = directory / ".astray.yaml"
         if config_path.exists():
             raw = yaml.safe_load(config_path.read_text()) or {}
             return _parse_raw(raw)

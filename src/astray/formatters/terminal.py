@@ -18,8 +18,8 @@ from rich.rule import Rule as RichRule
 from rich.table import Table
 from rich.text import Text
 
-from vibelint import __version__
-from vibelint.models import Finding, ScanResult, Severity
+from astray import __version__
+from astray.models import Finding, ScanResult, Severity
 
 _SEV_COLOR = {
     Severity.CRITICAL: "bold red",
@@ -50,7 +50,7 @@ class TerminalFormatter:
 
         # ── Header ───────────────────────────────────────────────────────
         c.print()
-        c.print(f"[bold]vibelint[/bold] [dim]v{__version__}[/dim] — AI Code Pattern Scanner")
+        c.print(f"[bold]astray[/bold] [dim]v{__version__}[/dim] — AI Code Pattern Scanner")
         c.print(
             f"[dim]{result.files_scanned} files scanned · "
             f"[bold red]{result.critical_count} critical[/bold red] · "
