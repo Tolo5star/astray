@@ -1,4 +1,4 @@
-"""VibeLint CLI — `vibelint scan ./src`."""
+"""Astray CLI — `astray scan ./src`."""
 
 from __future__ import annotations
 
@@ -7,16 +7,16 @@ from pathlib import Path
 
 import click
 
-from vibelint import __version__
-from vibelint.config import load_config
-from vibelint.engine import Scanner
-from vibelint.formatters.json_fmt import JsonFormatter
-from vibelint.formatters.terminal import TerminalFormatter
-from vibelint.models import Severity
+from astray import __version__
+from astray.config import load_config
+from astray.engine import Scanner
+from astray.formatters.json_fmt import JsonFormatter
+from astray.formatters.terminal import TerminalFormatter
+from astray.models import Severity
 
 
 @click.group()
-@click.version_option(__version__, prog_name="vibelint")
+@click.version_option(__version__, prog_name="astray")
 def main() -> None:
     """VibeLint — AI code pattern scanner. Catch the bugs AI writes 2.74x more often."""
 
@@ -27,7 +27,7 @@ def main() -> None:
 @click.option("--fail-on", type=click.Choice(["critical", "warning", "info"]), default=None,
               help="Exit 1 if any finding at this severity or above (overrides config)")
 @click.option("--config", "config_path", type=click.Path(), default=None,
-              help="Path to .vibelint.yaml")
+              help="Path to .astray.yaml")
 @click.option("--verbose", "-v", is_flag=True, default=False,
               help="Expand all warnings (default: show collapsed summary table)")
 def scan(target: str, fmt: str, fail_on: str | None, config_path: str | None, verbose: bool) -> None:
@@ -62,7 +62,7 @@ def scan(target: str, fmt: str, fail_on: str | None, config_path: str | None, ve
 @main.command()
 def rules() -> None:
     """List all available rules."""
-    from vibelint.rules.registry import get_all_rules
+    from astray.rules.registry import get_all_rules
     from rich.console import Console
     from rich.table import Table
 

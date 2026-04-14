@@ -6,8 +6,8 @@ import json
 import sys
 from pathlib import Path
 
-from vibelint import __version__
-from vibelint.models import ScanResult
+from astray import __version__
+from astray.models import ScanResult
 
 
 class JsonFormatter:

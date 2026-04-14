@@ -1,40 +1,47 @@
-# VibeLint
+# Astray
 
 **AI code pattern scanner. Catch the bugs AI writes 2.74x more often.**
 
 Research-backed rules targeting the specific ways AI generators fail. Not a generic linter — a scanner that knows *how* AI fails and flags those exact patterns, with the multiplier to prove it.
 
 ```bash
-pip install vibelint
-vibelint scan ./src
+pip install astray
+astray scan ./src
 ```
 
 ```
-vibelint v0.1.0 — AI Code Pattern Scanner
+astray v0.1.0 — AI Code Pattern Scanner
+117 files scanned · 9 critical · 418 warning · 0 info
 
-Files scanned: 117
-AI-pattern issues: 9
+───────────────────── CRITICAL  9 issues ──────────────────────
 
-CRITICAL (3)
-  src/api/auth.ts:42
-  AI-SEC-001: OpenAI/Anthropic-style API key: "sk-proj-abc123..."
-  Fix: Move to environment variable or secrets manager
-  AI generates this 1.88x more often than humans
+  hooks/useLocalStorage.ts  2 issues
+  ├─ line 36  AI-LOGIC-002  Catch block only logs — error is not re-thrown
+  │     } catch (error) {
+  │    → Re-throw after logging, or handle the error condition explicitly
+  │    AI generates this 1.75x more often
+  │
+  └─ line 81  AI-LOGIC-002  Catch block only logs — error is not re-thrown
 
-  src/utils/data.ts:18
-  AI-LOGIC-001: Async function in .map() returns Promise[], not resolved values
-  Fix: Use `await Promise.all(arr.map(...))` or replace with a `for...of` loop
-  AI generates this 1.75x more often than humans
+  lib/api/stats.ts  2 issues
+  ├─ line 44  AI-LOGIC-002  Empty catch block — errors are silently swallowed
+  └─ line 67  AI-LOGIC-002  Empty catch block — errors are silently swallowed
 
-  src/components/Dashboard.tsx:91
-  AI-SEC-002: dangerouslySetInnerHTML with dynamic value — XSS risk
-  Fix: Sanitize with DOMPurify.sanitize() before setting __html
-  AI generates this 2.74x more often than humans
+───────────────────── WARNING  418 issues ─────────────────────
+
+  Rule          What it flags             Issues  Files  Worst file
+  AI-QUAL-003   'Footer' is imported         364     91  GameRoot.tsx (24)
+  AI-LOGIC-004  'obj' may be undefined        30      6  missions/page.tsx (8)
+  AI-QUAL-001   as any type assertion         24     13  lib/auth.ts (5)
+
+──────────────────────────────────────────────────────────────
+  9 critical · 418 warning  in 117 files
+  Run with --verbose to expand all warnings
 ```
 
 ---
 
-## Why VibeLint
+## Why Astray
 
 AI-generated code fails in statistically predictable patterns that generic linters miss:
 
@@ -48,26 +55,22 @@ AI-generated code fails in statistically predictable patterns that generic linte
 
 Sources: [CodeRabbit AI vs Human Code Report (Dec 2025)](https://www.coderabbit.ai/blog/state-of-ai-vs-human-code-generation-report), [CMU Security Benchmark (2026)](https://dev.to/solobillions/i-tested-every-vibe-coding-security-scanner-2026-heres-what-actually-works-p9k)
 
-**VibeLint is not:**
+**Astray is not:**
 - A generic linter (ESLint, Pylint do that)
 - A SAST scanner (Semgrep, Snyk do that)
 - An AI code detector (SonarQube does that)
 
-**VibeLint is:** a scanner that knows the documented failure profile of AI generators and catches exactly those patterns.
+**Astray is:** a scanner that knows the documented failure profile of AI generators and catches exactly those patterns.
 
 ---
 
 ## Installation
 
-```bash
-pip install vibelint
-```
-
-Or from source:
+> **PyPI release coming soon.** Install from source in the meantime:
 
 ```bash
-git clone https://github.com/your-org/vibelint
-cd vibelint
+git clone https://github.com/Tolo5star/astray
+cd astray
 pip install -e .
 ```
 
@@ -80,35 +83,41 @@ pip install -e .
 ### Scan a directory
 
 ```bash
-vibelint scan ./src
+astray scan ./src
 ```
 
 ### Scan a single file
 
 ```bash
-vibelint scan src/api/auth.ts
+astray scan src/api/auth.ts
 ```
 
 ### JSON output (for CI/CD pipelines, dashboards)
 
 ```bash
-vibelint scan ./src --format json
+astray scan ./src --format json
 ```
 
 ### Fail on specific severity (for CI gates)
 
 ```bash
 # Exit 1 if any critical finding
-vibelint scan ./src --fail-on critical
+astray scan ./src --fail-on critical
 
 # Exit 1 if any warning or above
-vibelint scan ./src --fail-on warning
+astray scan ./src --fail-on warning
+```
+
+### Expand all warnings
+
+```bash
+astray scan ./src --verbose
 ```
 
 ### List all rules
 
 ```bash
-vibelint rules
+astray rules
 ```
 
 ---
@@ -142,13 +151,13 @@ vibelint rules
 
 **Smart suppressions:**
 - `AI-LOGIC-001` skips `.map()` calls already wrapped in `Promise.all()`
-- `AI-SEC-002` skips `dangerouslySetInnerHTML` when `__html` is a static string/template (e.g. CSS injection via `<style>`) — only flags when the value is a variable, expression, or interpolated template
+- `AI-SEC-002` skips `dangerouslySetInnerHTML` when `__html` is a static string/template (e.g. CSS-in-JS `<style>` injection) — only flags variable/expression values
 
 ---
 
 ## Configuration
 
-Create `.vibelint.yaml` in your project root:
+Create `.astray.yaml` in your project root:
 
 ```yaml
 rules:
@@ -168,7 +177,7 @@ ignore:
 fail_on: warning        # exit 1 if any warning or above
 ```
 
-VibeLint walks up from the scan target to find `.vibelint.yaml`. If none is found, defaults are used.
+Astray walks up from the scan target to find `.astray.yaml`. If none is found, defaults are used.
 
 ---
 
@@ -177,8 +186,8 @@ VibeLint walks up from the scan target to find `.vibelint.yaml`. If none is foun
 ### GitHub Actions
 
 ```yaml
-# .github/workflows/vibelint.yml
-name: VibeLint
+# .github/workflows/astray.yml
+name: Astray
 
 on: [push, pull_request]
 
@@ -190,18 +199,18 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install vibelint
-      - run: vibelint scan ./src --fail-on critical
+      - run: pip install astray
+      - run: astray scan ./src --fail-on critical
 ```
 
 ### GitLab CI
 
 ```yaml
-vibelint:
+astray:
   image: python:3.12
   script:
-    - pip install vibelint
-    - vibelint scan ./src --fail-on critical
+    - pip install astray
+    - astray scan ./src --fail-on critical
 ```
 
 ### Pre-commit hook
@@ -211,9 +220,9 @@ vibelint:
 repos:
   - repo: local
     hooks:
-      - id: vibelint
-        name: VibeLint AI pattern scan
-        entry: vibelint scan
+      - id: astray
+        name: Astray AI pattern scan
+        entry: astray scan
         args: [--fail-on, critical]
         language: python
         pass_filenames: false
@@ -223,7 +232,7 @@ repos:
 
 ## How It Works
 
-VibeLint uses [tree-sitter](https://tree-sitter.github.io/tree-sitter/) to parse TypeScript/JavaScript into an AST, then runs pattern-matching rules against the tree.
+Astray uses [tree-sitter](https://tree-sitter.github.io/tree-sitter/) to parse TypeScript/JavaScript into an AST, then runs pattern-matching rules against the tree.
 
 ```
 Source files
@@ -272,12 +281,12 @@ Formatter (terminal / JSON)  ──▶  Output
 
 ## Contributing
 
-Rules live in `src/vibelint/rules/{sec,logic,qual}/`. Each rule is a Python class:
+Rules live in `src/astray/rules/{sec,logic,qual}/`. Each rule is a Python class:
 
 ```python
-from vibelint.rules.base import Rule
-from vibelint.rules.registry import register
-from vibelint.models import RuleMeta, Severity
+from astray.rules.base import Rule
+from astray.rules.registry import register
+from astray.models import RuleMeta, Severity
 
 @register
 class MyRule(Rule):
@@ -302,7 +311,7 @@ class MyRule(Rule):
         return findings
 ```
 
-Then add the import to `src/vibelint/rules/registry.py` and add a test fixture in `tests/fixtures/`.
+Then add the import to `src/astray/rules/registry.py` and add a test fixture in `tests/fixtures/`.
 
 ---
 

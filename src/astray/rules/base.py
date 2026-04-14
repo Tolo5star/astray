@@ -8,7 +8,7 @@ from typing import Iterator
 
 from tree_sitter import Node
 
-from vibelint.models import Finding, RuleMeta, Severity
+from astray.models import Finding, RuleMeta, Severity
 
 
 class Rule(ABC):
