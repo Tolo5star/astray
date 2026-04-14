@@ -81,10 +81,14 @@ class UnusedImports(Rule):
 
     @staticmethod
     def _get_body_source(root: Node, source: bytes) -> bytes:
-        """Get source text excluding import/export statements at the top."""
+        """Get full source text excluding only import_statement nodes.
+
+        export_statement is intentionally kept: `export default function App()`
+        is an export_statement whose body contains actual usages of imports.
+        """
         parts = []
         for child in root.children:
-            if child.type not in ("import_statement", "export_statement"):
+            if child.type != "import_statement":
                 parts.append(source[child.start_byte:child.end_byte])
         return b" ".join(parts)
 
